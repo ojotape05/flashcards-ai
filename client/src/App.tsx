@@ -1,64 +1,40 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Sidebar } from "./components/Sidebar/Sidebar"
 import { Header } from "./components/Header/Header"
 import { ActionBar } from "./components/ActionBar/ActionBar"
 import { FileGrid, type FileItem } from "./components/FileGrid/FileGrid"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/Tabs"
 
-// Mock data
-const mockFiles: FileItem[] = [
-  {
-    id: "1",
-    title: "Apresentação Q4 2024",
-    modified: "2 horas atrás",
-    sizeTotal: "2.4 MB",
-    shared: true,
-    starred: true,
-  },
-  {
-    id: "2",
-    title: "Vídeos do Produto",
-    modified: "1 dia atrás",
-    shared: true,
-  },
-  {
-    id: "3",
-    title: "Relatório Financeiro",
-    modified: "3 dias atrás",
-    sizeTotal: "1.8 MB",
-  },
-  {
-    id: "4",
-    title: "Demo do Cliente",
-    modified: "1 semana atrás",
-    sizeTotal: "45.2 MB",
-    starred: true,
-  },
-  {
-    id: "5",
-    title: "Documentação API",
-    modified: "2 semanas atrás",
-  },
-  {
-    id: "6",
-    title: "Contrato Assinado",
-    modified: "1 mês atrás",
-    sizeTotal: "892 KB",
-    shared: true,
-  },
-]
-
 export default function FileManager() {
   const [activeSection, setActiveSection] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("recent")
+  const [mockFiles, setMockFiles] = useState<FileItem[]>([])
+
+  useEffect(() => {
+
+    fetch("http://localhost:3333/buscar-colecoes", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(resp => resp.json())
+    .then(json => {
+      setMockFiles(json)
+    })
+    .catch(error => console.error("Erro ao buscar dados:", error))
+
+  }, []);
 
   // Filter files based on search query
   const filteredFiles = useMemo(() => {
-    return mockFiles.filter((file) => file.title.toLowerCase().includes(searchQuery.toLowerCase()))
-  }, [searchQuery])
+    return mockFiles.filter((file) =>
+      file.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [searchQuery, mockFiles])
 
   // Filter files based on active tab
   const tabFilteredFiles = useMemo(() => {
@@ -77,10 +53,19 @@ export default function FileManager() {
     // Implement file opening logic here
   }
 
-  const handleCreateNew = () => {
-    console.log("Create new file")
-    // Implement create new file logic
+  const handleCreateNew = (data?: { title: string; emails: string[]; isShared: boolean }) => {
+    if (data) {
+      console.log("Creating new collection:", data)
+      // Here you would typically save the collection to your backend
+      // and update the local state with the new collection
+    }
   }
+
+  // const handleCreateNew = () => {
+  //   console.log("Create new file")
+  //   // Implement create new file logic
+
+  // }
 
   const handleUpload = () => {
     console.log("Upload files")
