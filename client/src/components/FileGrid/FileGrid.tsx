@@ -1,16 +1,16 @@
 "use client"
 
 import type React from "react"
-import { FileCard, type FileType } from "./FileCard"
+import { FileCard } from "./FileCard"
+// import { FileItem } from '@types'
 
 export interface FileItem {
-  id: string
-  title: string
-  type: FileType
-  size?: string
-  modified: string
-  shared?: boolean
-  starred?: boolean
+  id: string;
+  title: string;
+  modified: string;      // No futuro, pode ser um tipo Date, mas string funciona para começar.
+  sizeTotal?: string;    // Opcional, pois pastas não têm tamanho.
+  shared?: boolean;      // Opcional.
+  starred?: boolean;     // Opcional.
 }
 
 interface FileGridProps {

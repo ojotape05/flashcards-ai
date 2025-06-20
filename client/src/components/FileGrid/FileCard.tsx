@@ -4,11 +4,8 @@ import type React from "react"
 import { Button } from "../ui/Button"
 import { FolderIcon, VideoIcon, FileTextIcon, StarIcon, Share2Icon, MoreHorizontalIcon } from "../ui/Icons"
 
-export type FileType = "folder" | "video" | "document" | "presentation"
-
 interface FileCardProps {
   title: string
-  type: FileType
   size?: string
   modified: string
   shared?: boolean
@@ -18,7 +15,6 @@ interface FileCardProps {
 
 export const FileCard: React.FC<FileCardProps> = ({
   title,
-  type,
   size,
   modified,
   shared = false,
@@ -26,33 +22,11 @@ export const FileCard: React.FC<FileCardProps> = ({
   onClick,
 }) => {
   const getIcon = () => {
-    switch (type) {
-      case "folder":
-        return <FolderIcon className="h-8 w-8 text-blue-500" />
-      case "video":
-        return <VideoIcon className="h-8 w-8 text-red-500" />
-      case "document":
-        return <FileTextIcon className="h-8 w-8 text-green-500" />
-      case "presentation":
-        return <FileTextIcon className="h-8 w-8 text-orange-500" />
-      default:
-        return <FileTextIcon className="h-8 w-8 text-gray-500" />
-    }
+    return <FolderIcon className="h-8 w-8 text-blue-500" />
   }
 
   const getTypeColor = () => {
-    switch (type) {
-      case "folder":
-        return "bg-blue-50 border-blue-200"
-      case "video":
-        return "bg-red-50 border-red-200"
-      case "document":
-        return "bg-green-50 border-green-200"
-      case "presentation":
-        return "bg-orange-50 border-orange-200"
-      default:
-        return "bg-gray-50 border-gray-200"
-    }
+    return "bg-blue-50 border-blue-200"
   }
 
   return (
