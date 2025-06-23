@@ -62,7 +62,7 @@ route.post('/nova-colecao', (req: Request, res: Response) => {
 
   console.log("post: /nova-colecao | req.body:", req.body)
   const nova_colecao = {
-    id: "7",
+    id: `${colecoes.length + 1}`,
     title: req.body.new_data.title,
     modified: req.body.new_data.modified,
     sizeTotal: req.body.new_data.sizeTotal,
@@ -70,6 +70,14 @@ route.post('/nova-colecao', (req: Request, res: Response) => {
   }
 
   colecoes.push(nova_colecao)
+  res.json(colecoes)
+
+})
+
+route.delete('/delete-colecao', (req: Request, res: Response) => {
+
+  console.log("delete: /delete-colecao | req.body:", req.body)
+  colecoes = colecoes.filter(colecao => colecao.id !== req.body.data.id)
   res.json(colecoes)
 
 })
