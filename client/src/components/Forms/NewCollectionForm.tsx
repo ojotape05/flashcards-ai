@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Button } from "../ui/Button"
 import { Input } from "../ui/Input"
 import { Switch } from "../ui/Switch"
-import { XIcon, MailIcon } from "../ui/Icons"
+import { EmailManager } from "./EmailManager"
 
 interface NewCollectionFormProps {
   onSubmit: (data: { title: string; emails: string[]; isShared: boolean }) => void
@@ -16,61 +16,27 @@ export const NewCollectionForm: React.FC<NewCollectionFormProps> = ({ onSubmit, 
   const [title, setTitle] = useState("")
   const [isShared, setIsShared] = useState(false)
   const [emails, setEmails] = useState<string[]>([])
-  const [currentEmail, setCurrentEmail] = useState("")
-  const [emailError, setEmailError] = useState("")
   const [titleError, setTitleError] = useState("")
-
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  const handleAddEmail = () => {
-    const trimmedEmail = currentEmail.trim()
-
-    if (!trimmedEmail) {
-      setEmailError("Digite um email")
-      return
-    }
-
-    if (!validateEmail(trimmedEmail)) {
-      setEmailError("Digite um email válido")
-      return
-    }
-
-    if (emails.includes(trimmedEmail)) {
-      setEmailError("Este email já foi adicionado")
-      return
-    }
-
-    setEmails([...emails, trimmedEmail])
-    setCurrentEmail("")
-    setEmailError("")
-  }
-
-  const handleRemoveEmail = (emailToRemove: string) => {
-    setEmails(emails.filter((email) => email !== emailToRemove))
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      handleAddEmail()
-    }
-  }
+  const [emailsError, setEmailsError] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    let hasErrors = false
+
     // Validate title
     if (!title.trim()) {
       setTitleError("O título é obrigatório")
-      return
+      hasErrors = true
     }
 
     // Validate emails if sharing is enabled
     if (isShared && emails.length === 0) {
-      setEmailError("Adicione pelo menos um email para compartilhar")
+      setEmailsError("Adicione pelo menos um email para compartilhar")
+      hasErrors = true
+    }
+
+    if (hasErrors) {
       return
     }
 
@@ -79,6 +45,26 @@ export const NewCollectionForm: React.FC<NewCollectionFormProps> = ({ onSubmit, 
       emails: isShared ? emails : [],
       isShared,
     })
+  }
+
+  const handleEmailsChange = (newEmails: string[]) => {
+    setEmails(newEmails)
+    // Clear error when emails are added
+    if (emailsError && newEmails.length > 0) {
+      setEmailsError("")
+    }
+  }
+
+  const handleShareToggle = (checked: boolean) => {
+    setIsShared(checked)
+    // Clear emails error when sharing is disabled
+    if (!checked && emailsError) {
+      setEmailsError("")
+    }
+    // Clear emails when sharing is disabled
+    if (!checked) {
+      setEmails([])
+    }
   }
 
   return (
@@ -101,56 +87,16 @@ export const NewCollectionForm: React.FC<NewCollectionFormProps> = ({ onSubmit, 
 
       {/* Share Toggle */}
       <div className="space-y-4">
-        <Switch checked={isShared} onChange={setIsShared} label="Compartilhar coleção" />
-
+        <Switch checked={isShared} onChange={handleShareToggle} label="Compartilhar coleção" />
         {isShared && (
-          <div className="space-y-3">
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <Input
-                  type="email"
-                  placeholder="Digite um email para compartilhar"
-                  value={currentEmail}
-                  onChange={(e) => {
-                    setCurrentEmail(e.target.value)
-                    if (emailError) setEmailError("")
-                  }}
-                  onKeyPress={handleKeyPress}
-                  error={emailError}
-                />
-              </div>
-              <Button type="button" onClick={handleAddEmail} variant="outline" className="px-3">
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Email List */}
-            {emails.length > 0 && (
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Emails adicionados:</label>
-                <div className="space-y-2 max-h-32 overflow-y-auto">
-                  {emails.map((email, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm"
-                    >
-                      <div className="flex items-center gap-2">
-                        <MailIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-gray-700">{email}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveEmail(email)}
-                        className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-gray-200"
-                      >
-                        <XIcon className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <EmailManager
+            emails={emails}
+            onEmailsChange={handleEmailsChange}
+            placeholder="Digite um email para compartilhar"
+            label="Emails"
+            error={emailsError}
+            required
+          />
         )}
       </div>
 

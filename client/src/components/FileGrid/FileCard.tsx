@@ -2,13 +2,13 @@
 
 import type React from "react"
 import { useState } from "react"
+import { ShareModal } from "../Forms/ShareModal"
 import { Button } from "../ui/Button"
 import { Dropdown, DropdownItem } from "../ui/Dropdown"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
+
 import {
   FolderIcon,
-  VideoIcon,
-  FileTextIcon,
   StarIcon,
   Share2Icon,
   MoreHorizontalIcon,
@@ -25,6 +25,7 @@ interface FileCardProps {
   starred?: boolean
   onClick?: () => void
   onDelete?: (id: string) => void
+  onShare?: (id: string, emails: string[]) => void
 }
 
 export const FileCard: React.FC<FileCardProps> = ({
@@ -36,16 +37,43 @@ export const FileCard: React.FC<FileCardProps> = ({
   starred = false,
   onClick,
   onDelete,
+  onShare,
 }) => {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+  const [isStarred, setIsStarred] = useState(starred)
+  const [isShared, setIsShared] = useState(shared)
 
-  const getIcon = () => {
-    return <FolderIcon className="h-8 w-8 text-blue-500" />
+  const handleShare = () => {
+    setIsShareModalOpen(true)
   }
 
-  const getTypeColor = () => {
-    return "bg-blue-50 border-blue-200"
+  const handleShareIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    handleShare()
+  }
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent card click when clicking on interactive
+    if ((e.target as HTMLElement).closest("[data-interactive]")) {
+      return
+    }
+    onClick?.()
+  }
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    
+    fetch('http://localhost:3333/favoritar-colecao', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: id, starred: !isStarred }),
+    })
+    .then((res) => setIsStarred(!isStarred))
+    .catch((err) => console.log('error', err))
+
   }
 
   const handleDelete = () => {
@@ -53,16 +81,37 @@ export const FileCard: React.FC<FileCardProps> = ({
   }
 
   const handleConfirmDelete = () => {
-    onDelete?.(id)
+
+    console.log("Delete collection data:", id)
+
+    fetch('http://localhost:3333/delete-colecao', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: id }),
+    })
+    .then((res) => onDelete?.(id))
+    .catch((err) => console.log('error', err))
+    
     setIsDeleteModalOpen(false)
+
   }
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    // Prevent card click when clicking on dropdown
-    if ((e.target as HTMLElement).closest("[data-dropdown]")) {
-      return
-    }
-    onClick?.()
+  const handleConfirmShare = (emails: string[]) => {
+
+    fetch('http://localhost:3333/compartilhar-colecao', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: id, emails: emails, shared: !isShared }),
+    })
+    .then((res) => onShare?.(id, emails))
+    .catch((err) => console.log('error', err))
+    
+    setIsShared(!isShared)
+    setIsShareModalOpen(false)
   }
 
   return (
@@ -72,12 +121,15 @@ export const FileCard: React.FC<FileCardProps> = ({
         className="group relative bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-gray-300 transition-all duration-200 cursor-pointer"
       >
         <div className="flex items-start justify-between mb-3">
-          <div className={`p-3 rounded-lg ${getTypeColor()}`}>{getIcon()}</div>
+          <div className={`p-3 rounded-lg bg-blue-50 border-blue-200`}>
+            <FolderIcon className="h-8 w-8 text-blue-500" />
+          </div>
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            {starred && <StarIcon className="h-4 w-4 text-yellow-500 fill-current" />}
-            {shared && <Share2Icon className="h-4 w-4 text-blue-500" />}
+          {isStarred && <StarIcon onClick={handleFavoriteClick} className="h-4 w-4 text-yellow-500 fill-current" />}
+          {!isStarred && <StarIcon onClick={handleFavoriteClick} className="h-4 w-4 text-gray-400" />}  
+            <Share2Icon className="h-4 w-4 text-blue-500" onClick={handleShareIconClick}/>
 
-            <div data-dropdown>
+            <div data-interactive>
               <Dropdown
                 trigger={
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
@@ -118,6 +170,13 @@ export const FileCard: React.FC<FileCardProps> = ({
         cancelText="Cancelar"
         variant="danger"
         icon={<AlertTriangleIcon className="h-6 w-6 text-red-600" />}
+      />
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        onShare={handleConfirmShare}
+        fileName={title}
       />
     </>
   )

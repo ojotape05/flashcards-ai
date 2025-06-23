@@ -17,27 +17,10 @@ interface FileGridProps {
   files: FileItem[]
   onFileClick?: (file: FileItem) => void
   onFileDelete: (fileId: string) => void
+  onFileShare?: (fileId: string, emails: string[]) => void
 }
 
-export const FileGrid: React.FC<FileGridProps> = ({ files, onFileClick, onFileDelete }) => {
-
-  const handleDeleteCollectionSubmit = (id: string) => {
-    console.log("Delete collection data:", id)
-
-    fetch('http://localhost:3333/delete-colecao', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data: {
-          id: id
-        }
-      }),
-    })
-    .then((res) => onFileDelete(id))
-    .catch((err) => console.log('error', err))
-  }
+export const FileGrid: React.FC<FileGridProps> = ({ files, onFileClick, onFileDelete, onFileShare }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -51,7 +34,8 @@ export const FileGrid: React.FC<FileGridProps> = ({ files, onFileClick, onFileDe
           shared={file.shared}
           starred={file.starred}
           onClick={() => onFileClick?.(file)}
-          onDelete={handleDeleteCollectionSubmit}
+          onDelete={onFileDelete}
+          onShare={onFileShare}
         />
       ))}
     </div>

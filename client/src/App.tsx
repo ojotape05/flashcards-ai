@@ -58,16 +58,16 @@ export default function FileManager() {
     console.log("File deleted:", fileId)
   }
 
-  const handleCreateNew = (data: FileItem[]) => {
-      setMockFiles(data)
-      return data
+  const handleFileShare = (fileId: string, emails: string[]) => {
+    // Update file to mark as shared
+    setMockFiles((prevFiles) => prevFiles.map((file) => (file.id === fileId ? { ...file, shared: true } : file)))
+    console.log("File shared:", { fileId, emails })
+    // Here you would typically send the sharing data to your backend
   }
 
-  // const handleCreateNew = () => {
-  //   console.log("Create new file")
-  //   // Implement create new file logic
-
-  // }
+  const handleCreateNew = (data: FileItem) => {
+    setMockFiles((prevFiles) => [...prevFiles, data]);
+  }
 
   const handleUpload = () => {
     console.log("Upload files")
@@ -97,15 +97,30 @@ export default function FileManager() {
             </TabsList>
 
             <TabsContent value="recent" className="mt-6">
-              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} onFileDelete={handleFileDelete} />
+              <FileGrid
+                files={tabFilteredFiles}
+                onFileClick={handleFileClick}
+                onFileDelete={handleFileDelete}
+                onFileShare={handleFileShare}
+              />
             </TabsContent>
 
             <TabsContent value="starred" className="mt-6">
-              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} onFileDelete={handleFileDelete} />
+              <FileGrid
+                  files={tabFilteredFiles}
+                  onFileClick={handleFileClick}
+                  onFileDelete={handleFileDelete}
+                  onFileShare={handleFileShare}
+              />
             </TabsContent>
 
             <TabsContent value="shared" className="mt-6">
-              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} onFileDelete={handleFileDelete} />
+              <FileGrid
+                files={tabFilteredFiles}
+                onFileClick={handleFileClick}
+                onFileDelete={handleFileDelete}
+                onFileShare={handleFileShare}
+              />
             </TabsContent>
           </Tabs>
         </div>
