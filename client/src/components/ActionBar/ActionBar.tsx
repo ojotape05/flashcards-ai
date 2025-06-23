@@ -6,9 +6,10 @@ import { PlusIcon, UploadIcon, FolderIcon } from "../ui/Icons"
 import { Modal } from "../ui/Modal"
 import { NewCollectionForm } from "../Forms/NewCollectionForm"
 import { useState } from "react"
+import type { FileItem } from "../FileGrid/FileGrid"
 
 interface ActionBarProps {
-  onCreateNew?: (data?: { title: string; emails: string[]; isShared: boolean }) => void
+  onCreateNew: (data: FileItem[]) => FileItem[]
   onUpload?: () => void
   onCreateFolder?: () => void
 }
@@ -40,10 +41,9 @@ export const ActionBar: React.FC<ActionBarProps> = ({ onCreateNew, onUpload, onC
       }),
     })
     .then((res) => res.json())
-    .then((json) => setMockFiles(json))
+    .then((json) => onCreateNew(json))
     .catch((err) => console.log('error'))
 
-    onCreateNew?.(data)
   }
 
   const handleNewCollectionCancel = () => {

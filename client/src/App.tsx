@@ -53,12 +53,14 @@ export default function FileManager() {
     // Implement file opening logic here
   }
 
-  const handleCreateNew = (data?: { title: string; emails: string[]; isShared: boolean }) => {
-    if (data) {
-      console.log("Creating new collection:", data)
-      // Here you would typically save the collection to your backend
-      // and update the local state with the new collection
-    }
+  const handleFileDelete = (fileId: string) => {
+    setMockFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId))
+    console.log("File deleted:", fileId)
+  }
+
+  const handleCreateNew = (data: FileItem[]) => {
+      setMockFiles(data)
+      return data
   }
 
   // const handleCreateNew = () => {
@@ -95,15 +97,15 @@ export default function FileManager() {
             </TabsList>
 
             <TabsContent value="recent" className="mt-6">
-              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} />
+              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} onFileDelete={handleFileDelete} />
             </TabsContent>
 
             <TabsContent value="starred" className="mt-6">
-              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} />
+              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} onFileDelete={handleFileDelete} />
             </TabsContent>
 
             <TabsContent value="shared" className="mt-6">
-              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} />
+              <FileGrid files={tabFilteredFiles} onFileClick={handleFileClick} onFileDelete={handleFileDelete} />
             </TabsContent>
           </Tabs>
         </div>
