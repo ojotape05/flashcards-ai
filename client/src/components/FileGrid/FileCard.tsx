@@ -21,6 +21,7 @@ interface FileCardProps {
   title: string
   sizeTotal?: string
   modified: string
+  shared_emails?: string[]
   shared?: boolean
   starred?: boolean
   onClick?: () => void
@@ -33,6 +34,7 @@ export const FileCard: React.FC<FileCardProps> = ({
   title,
   sizeTotal,
   modified,
+  shared_emails,
   shared = false,
   starred = false,
   onClick,
@@ -173,6 +175,7 @@ export const FileCard: React.FC<FileCardProps> = ({
       />
 
       <ShareModal
+        shared_emails={shared_emails}
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         onShare={handleConfirmShare}

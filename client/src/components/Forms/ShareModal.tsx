@@ -7,14 +7,15 @@ import { Button } from "../ui/Button"
 import { EmailManager } from "./EmailManager"
 
 interface ShareModalProps {
+  shared_emails: string[]
   isOpen: boolean
   onClose: () => void
   onShare: (emails: string[]) => void
   fileName: string
 }
 
-export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, onShare, fileName }) => {
-  const [emails, setEmails] = useState<string[]>([])
+export const ShareModal: React.FC<ShareModalProps> = ({ shared_emails, isOpen, onClose, onShare, fileName }) => {
+  const [emails, setEmails] = useState<string[]>(shared_emails)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +40,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, onShare
   }
 
   const handleClose = () => {
-    setEmails([])
+    // setEmails([])
     onClose()
   }
 

@@ -7,10 +7,11 @@ import { FileCard } from "./FileCard"
 export interface FileItem {
   id: string;
   title: string;
-  modified: string;      // No futuro, pode ser um tipo Date, mas string funciona para começar.
-  sizeTotal?: string;    // Opcional, pois pastas não têm tamanho.
-  shared?: boolean;      // Opcional.
-  starred?: boolean;     // Opcional.
+  modified: string;        // No futuro, pode ser um tipo Date, mas string funciona para começar.
+  sizeTotal?: string;      // Opcional, pois pastas não têm tamanho.
+  shared_emails?: string[]; // Opcional
+  shared?: boolean;        // Opcional.
+  starred?: boolean;       // Opcional.
 }
 
 interface FileGridProps {
@@ -31,6 +32,7 @@ export const FileGrid: React.FC<FileGridProps> = ({ files, onFileClick, onFileDe
           title={file.title}
           sizeTotal={file.sizeTotal}
           modified={file.modified}
+          shared_emails={file.shared_emails}
           shared={file.shared}
           starred={file.starred}
           onClick={() => onFileClick?.(file)}
