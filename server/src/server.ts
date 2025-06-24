@@ -64,6 +64,7 @@ route.get('/', (req: Request, res: Response) => {
 })
 
 route.get('/buscar-colecoes', (req: Request, res: Response) => {
+  console.log("get: /buscar-colecao | res.json:", colecoes)
   res.json(colecoes)
 })
 
@@ -78,7 +79,7 @@ route.post('/nova-colecao', (req: Request, res: Response) => {
     sizeTotal: req.body.new_data.sizeTotal,
     starred: false,
     shared: req.body.new_data.shared,
-    shared_emails: []
+    shared_emails: req.body.new_data.emails
   }
 
   colecoes.push(nova_colecao)
