@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Modal } from "../ui/Modal"
 import { Button } from "../ui/Button"
 import { EmailManager } from "./EmailManager"
@@ -20,10 +20,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({ shared_emails, isOpen, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (emails.length === 0) {
-      return
-    }
 
     setIsSubmitting(true)
 
@@ -66,8 +62,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({ shared_emails, isOpen, o
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={emails.length === 0 || isSubmitting}>
-            {isSubmitting ? "Compartilhando..." : "Compartilhar"}
+          <Button type="submit" disabled={ isSubmitting || emails.length === shared_emails.length }>
+            { emails.length < shared_emails.length ? "Salvar" : "Compartilhar"}
           </Button>
         </div>
       </form>

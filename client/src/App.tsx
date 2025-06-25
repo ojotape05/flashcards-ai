@@ -6,6 +6,10 @@ import { Header } from "./components/Header/Header"
 import { ActionBar } from "./components/ActionBar/ActionBar"
 import { FileGrid, type FileItem } from "./components/FileGrid/FileGrid"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/Tabs"
+// import { VideoViewer } from "./components/Viewers/VideoViewer"
+// import { PDFViewer } from "./components/Viewers/PDFViewer"
+// import { SpreadsheetViewer } from "./components/Viewers/SpreadsheetViewer"
+// import { FolderViewer } from "./components/Viewers/FolderViewer"
 
 export default function FileManager() {
   const [activeSection, setActiveSection] = useState("all")
@@ -60,7 +64,7 @@ export default function FileManager() {
 
   const handleFileShare = (fileId: string, emails: string[]) => {
     // Update file to mark as shared
-    setMockFiles((prevFiles) => prevFiles.map((file) => (file.id === fileId ? { ...file, shared: true } : file)))
+    setMockFiles((prevFiles) => prevFiles.map((file) => (file.id === fileId ? { ...file, shared_emails: emails, shared: emails.length > 0 } : file)))
     console.log("File shared:", { fileId, emails })
     // Here you would typically send the sharing data to your backend
   }
