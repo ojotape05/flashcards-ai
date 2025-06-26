@@ -24,8 +24,6 @@ interface FileGridProps {
 
 export const FileGrid: React.FC<FileGridProps> = ({ files, onFileClick, onFileDelete, onFileShare }) => {
 
-  console.log(files)
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {files.map((file) => (

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 interface TabsContextType {
   activeTab: string
@@ -14,10 +14,17 @@ interface TabsProps {
   defaultValue: string
   children: React.ReactNode
   className?: string
+  onChange?: (activeTab: string) => void
 }
 
-export const Tabs: React.FC<TabsProps> = ({ defaultValue, children, className = "" }) => {
+export const Tabs: React.FC<TabsProps> = ({ defaultValue, children, className = "", onChange }) => {
   const [activeTab, setActiveTab] = useState(defaultValue)
+
+  useEffect(() => {
+
+    onChange(activeTab)
+
+  }, [activeTab])
 
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
@@ -31,7 +38,7 @@ interface TabsListProps {
   className?: string
 }
 
-export const TabsList: React.FC<TabsListProps> = ({ children, className = "" }) => {
+export const TabsList: React.FC<TabsListProps> = ({ children, className = ""}) => {
   return <div className={`inline-flex bg-gray-100 rounded-lg p-1 ${className}`}>{children}</div>
 }
 

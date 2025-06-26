@@ -182,7 +182,7 @@ export default function FileManager() {
           <div className="flex-1 p-6">
             <ActionBar onCreateNew={handleCreateNew} onUpload={handleUpload} onCreateFolder={handleCreateFolder} />
 
-            <Tabs defaultValue="recent" className="mb-6">
+            <Tabs defaultValue={activeTab} className="mb-6" onChange={setActiveTab}>
               <TabsList className="bg-gray-100">
                 <TabsTrigger value="recent">Recentes</TabsTrigger>
                 <TabsTrigger value="starred">Favoritos</TabsTrigger>

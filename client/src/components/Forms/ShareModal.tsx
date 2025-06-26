@@ -19,8 +19,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({ file, isOpen, onClose, o
   const [sharedEmails, setSharedEmails] = useState<string[]>(file?.shared_emails || [])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  console.log("ShareModal:", file)
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
