@@ -3,7 +3,8 @@
 import type React from "react"
 import { useState } from "react"
 import { Button } from "../ui/Button"
-import { FileGrid, type FileItem } from "../FileGrid/FileGrid"
+import { FileGrid } from "../FileGrid/FileGrid"
+import { type FileItem } from "../FileGrid/FileCard"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/Tabs"
 import { XIcon, EditIcon, FolderIcon, ChevronRightIcon } from "../ui/Icons"
 
@@ -31,7 +32,7 @@ export const FolderViewer: React.FC<FolderViewerProps> = ({
       title: "Apresentação Produto A",
       type: "presentation",
       modified: "1 hora atrás",
-      size: "1.2 MB",
+      sizeTotal: "1.2 MB",
       starred: true,
     },
     {
@@ -39,14 +40,14 @@ export const FolderViewer: React.FC<FolderViewerProps> = ({
       title: "Video Demo",
       type: "video",
       modified: "2 horas atrás",
-      size: "25.4 MB",
+      sizeTotal: "25.4 MB",
     },
     {
       id: "f3",
       title: "Especificações Técnicas",
       type: "document",
       modified: "1 dia atrás",
-      size: "856 KB",
+      sizeTotal: "856 KB",
       shared: true,
     },
     {
@@ -54,7 +55,7 @@ export const FolderViewer: React.FC<FolderViewerProps> = ({
       title: "Planilha de Custos",
       type: "document",
       modified: "2 dias atrás",
-      size: "445 KB",
+      sizeTotal: "445 KB",
     },
     {
       id: "f5",

@@ -6,16 +6,22 @@ import { Header } from "./components/Header/Header"
 import { ActionBar } from "./components/ActionBar/ActionBar"
 import { FileGrid, type FileItem } from "./components/FileGrid/FileGrid"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/Tabs"
-// import { VideoViewer } from "./components/Viewers/VideoViewer"
-// import { PDFViewer } from "./components/Viewers/PDFViewer"
-// import { SpreadsheetViewer } from "./components/Viewers/SpreadsheetViewer"
-// import { FolderViewer } from "./components/Viewers/FolderViewer"
+import { VideoViewer } from "./components/Viewers/VideoViewer"
+import { PDFViewer } from "./components/Viewers/PDFViewer"
+import { SpreadsheetViewer } from "./components/Viewers/SpreadsheetViewer"
+import { FolderViewer } from "./components/Viewers/FolderViewer"
+import { ShareModal } from "./components/Forms/ShareModal"
+
+type ViewerType = "video" | "pdf" | "spreadsheet" | "folder" | null
 
 export default function FileManager() {
   const [activeSection, setActiveSection] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("recent")
   const [mockFiles, setMockFiles] = useState<FileItem[]>([])
+  const [currentViewer, setCurrentViewer] = useState<ViewerType>(null)
+  const [currentFile, setCurrentFile] = useState<FileItem | null>(null)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
 
   useEffect(() => {
 
@@ -53,11 +59,30 @@ export default function FileManager() {
   }, [filteredFiles, activeTab])
 
   const handleFileClick = (file: FileItem) => {
-    console.log("File clicked:", file)
-    // Implement file opening logic here
+    setCurrentFile(file)
+
+    switch (file.type) {
+      case "video":
+        setCurrentViewer("video")
+        break
+      case "document":
+        // Assume documents are PDFs for this demo
+        setCurrentViewer("pdf")
+        break
+      case "presentation":
+        // Assume presentations are spreadsheets for this demo
+        setCurrentViewer("spreadsheet")
+        break
+      case "folder":
+        setCurrentViewer("folder")
+        break
+      default:
+        console.log("File clicked:", file)
+    }
   }
 
   const handleFileDelete = (fileId: string) => {
+
     setMockFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId))
     console.log("File deleted:", fileId)
   }
@@ -83,52 +108,127 @@ export default function FileManager() {
     // Implement create folder logic
   }
 
+  const handleCloseViewer = () => {
+    setCurrentViewer(null)
+    setCurrentFile(null)
+  }
+
+  const handleShareFromViewer = () => {
+    setIsShareModalOpen(true)
+  }
+
+  const handleShareModalClose = () => {
+    setIsShareModalOpen(false)
+  }
+
+  const handleShareConfirm = (emails: string[]) => {
+    if (currentFile) {
+      handleFileShare(currentFile.id, emails)
+    }
+    setIsShareModalOpen(false)
+  }
+
+  // Render viewers
+  if (currentViewer && currentFile) {
+    switch (currentViewer) {
+      case "video":
+        return (
+          <VideoViewer
+            fileName={currentFile.title}
+            fileSize={currentFile.size}
+            onClose={handleCloseViewer}
+            onShare={handleShareFromViewer}
+          />
+        )
+      case "pdf":
+        return (
+          <PDFViewer
+            fileName={currentFile.title}
+            fileSize={currentFile.size}
+            onClose={handleCloseViewer}
+            onShare={handleShareFromViewer}
+          />
+        )
+      case "spreadsheet":
+        return (
+          <SpreadsheetViewer
+            fileName={currentFile.title}
+            fileSize={currentFile.size}
+            onClose={handleCloseViewer}
+            onShare={handleShareFromViewer}
+          />
+        )
+      case "folder":
+        return (
+          <FolderViewer
+            folderName={currentFile.title}
+            onClose={handleCloseViewer}
+            onFileClick={handleFileClick}
+            onFileDelete={handleFileDelete}
+            onFileShare={handleFileShare}
+          />
+        )
+    }
+  }
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+    <>
+      <div className="flex h-screen bg-gray-50">
+        <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
-      <div className="flex-1 flex flex-col">
-        <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <div className="flex-1 flex flex-col">
+          <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-        <div className="flex-1 p-6">
-          <ActionBar onCreateNew={handleCreateNew} onUpload={handleUpload} onCreateFolder={handleCreateFolder} />
+          <div className="flex-1 p-6">
+            <ActionBar onCreateNew={handleCreateNew} onUpload={handleUpload} onCreateFolder={handleCreateFolder} />
 
-          <Tabs defaultValue="recent" className="mb-6">
-            <TabsList className="bg-gray-100">
-              <TabsTrigger value="recent">Recentes</TabsTrigger>
-              <TabsTrigger value="starred">Favoritos</TabsTrigger>
-              <TabsTrigger value="shared">Compartilhados</TabsTrigger>
-            </TabsList>
+            <Tabs defaultValue="recent" className="mb-6">
+              <TabsList className="bg-gray-100">
+                <TabsTrigger value="recent">Recentes</TabsTrigger>
+                <TabsTrigger value="starred">Favoritos</TabsTrigger>
+                <TabsTrigger value="shared">Compartilhados</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="recent" className="mt-6">
-              <FileGrid
-                files={tabFilteredFiles}
-                onFileClick={handleFileClick}
-                onFileDelete={handleFileDelete}
-                onFileShare={handleFileShare}
-              />
-            </TabsContent>
-
-            <TabsContent value="starred" className="mt-6">
-              <FileGrid
+              <TabsContent value="recent" className="mt-6">
+                <FileGrid
                   files={tabFilteredFiles}
                   onFileClick={handleFileClick}
                   onFileDelete={handleFileDelete}
                   onFileShare={handleFileShare}
-              />
-            </TabsContent>
+                />
+              </TabsContent>
 
-            <TabsContent value="shared" className="mt-6">
-              <FileGrid
-                files={tabFilteredFiles}
-                onFileClick={handleFileClick}
-                onFileDelete={handleFileDelete}
-                onFileShare={handleFileShare}
-              />
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="starred" className="mt-6">
+                <FileGrid
+                    files={tabFilteredFiles}
+                    onFileClick={handleFileClick}
+                    onFileDelete={handleFileDelete}
+                    onFileShare={handleFileShare}
+                />
+              </TabsContent>
+
+              <TabsContent value="shared" className="mt-6">
+                <FileGrid
+                  files={tabFilteredFiles}
+                  onFileClick={handleFileClick}
+                  onFileDelete={handleFileDelete}
+                  onFileShare={handleFileShare}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Share Modal */}
+      {isShareModalOpen && currentFile && (
+        <ShareModal
+          file={currentFile}
+          isOpen={isShareModalOpen}
+          onClose={handleShareModalClose}
+          onShare={handleShareConfirm}
+        />
+      )}
+    </>
   )
 }

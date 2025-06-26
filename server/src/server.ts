@@ -12,50 +12,60 @@ var colecoes = [
   {
     id: "1",
     title: "Apresentação Q4 2024",
+    type: 'folder',
     modified: "2 horas atrás",
     sizeTotal: "2.4 MB",
     shared_emails: ['teste@gmail.com'],
     shared: true,
-    starred: true,
+    starred: true
   },
   {
     id: "2",
     title: "Vídeos do Produto",
+    type: 'folder',
     modified: "1 dia atrás",
     shared_emails: ['teste@gmail.com'],
     shared: true,
+    starred: false
   },
   {
     id: "3",
     title: "Relatório Financeiro",
+    type: 'folder',
     modified: "3 dias atrás",
     sizeTotal: "1.8 MB",
     shared_emails: [],
-    shared: false
+    shared: false,
+    starred: false
   },
   {
     id: "4",
     title: "Demo do Cliente",
+    type: 'folder',
     modified: "1 semana atrás",
     sizeTotal: "45.2 MB",
-    starred: true,
     shared_emails: [],
-    shared: false
+    shared: false,
+    starred: true
   },
   {
     id: "5",
     title: "Documentação API",
+    type: 'folder',
     modified: "2 semanas atrás",
     shared_emails: [],
-    shared: false
+    shared: false,
+    starred: false
   },
   {
     id: "6",
     title: "Contrato Assinado",
+    type: 'folder',
     modified: "1 mês atrás",
     sizeTotal: "892 KB",
     shared_emails: ['teste@gmail.com'],
     shared: true,
+    starred: false
   },
 ]
 
@@ -75,6 +85,7 @@ route.post('/nova-colecao', (req: Request, res: Response) => {
   const nova_colecao = {
     id: `${colecoes.length + 1}`,
     title: req.body.new_data.title,
+    type: 'folder',
     modified: req.body.new_data.modified,
     sizeTotal: req.body.new_data.sizeTotal,
     starred: false,
