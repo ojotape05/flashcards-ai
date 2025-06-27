@@ -2,18 +2,6 @@
 
 import type React from "react"
 import { FileCard, type FileItem } from "./FileCard"
-// import { FileItem } from '@types'
-
-// export interface FileItem {
-//   id: string;
-//   title: string;
-//   type: FileType;
-//   modified: string;        // No futuro, pode ser um tipo Date, mas string funciona para começar.
-//   sizeTotal?: string;      // Opcional, pois pastas não têm tamanho.
-//   shared_emails: string[]; 
-//   shared: boolean;         
-//   starred?: boolean;       // Opcional.
-// }
 
 interface FileGridProps {
   files: FileItem[]

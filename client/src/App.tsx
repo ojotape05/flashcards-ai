@@ -4,12 +4,13 @@ import { useState, useMemo, useEffect } from "react"
 import { Sidebar } from "./components/Sidebar/Sidebar"
 import { Header } from "./components/Header/Header"
 import { ActionBar } from "./components/ActionBar/ActionBar"
-import { FileGrid, type FileItem } from "./components/FileGrid/FileGrid"
+import { type FileItem } from "./components/FileGrid/FileCard"
+import { FileGrid } from "./components/FileGrid/FileGrid"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/Tabs"
 import { VideoViewer } from "./components/Viewers/VideoViewer"
 import { PDFViewer } from "./components/Viewers/PDFViewer"
 import { SpreadsheetViewer } from "./components/Viewers/SpreadsheetViewer"
-import { FolderViewer } from "./components/Viewers/FolderViewer"
+import { FolderViewer, type BreadcrumbItem } from "./components/Viewers/FolderViewer"
 import { ShareModal } from "./components/Forms/ShareModal"
 
 type ViewerType = "video" | "pdf" | "spreadsheet" | "folder" | null
@@ -22,6 +23,9 @@ export default function FileManager() {
   const [currentViewer, setCurrentViewer] = useState<ViewerType>(null)
   const [currentFile, setCurrentFile] = useState<FileItem | null>(null)
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+  const [currentFolderId, setCurrentFolderId] = useState<string>("")
+  const [breadcrumbPath, setBreadcrumbPath] = useState<BreadcrumbItem[]>([])
+
 
   useEffect(() => {
 
@@ -75,6 +79,8 @@ export default function FileManager() {
         break
       case "folder":
         setCurrentViewer("folder")
+        setCurrentFolderId(file.id)
+        setBreadcrumbPath([{ name: file.title, id: file.id }])
         break
       default:
         console.log("File clicked:", file)
@@ -111,6 +117,8 @@ export default function FileManager() {
   const handleCloseViewer = () => {
     setCurrentViewer(null)
     setCurrentFile(null)
+    setCurrentFolderId("")
+    setBreadcrumbPath([])
   }
 
   const handleShareFromViewer = () => {
@@ -128,6 +136,21 @@ export default function FileManager() {
     setIsShareModalOpen(false)
   }
 
+  const handleNavigateToFolder = (folderId: string, newBreadcrumbPath: BreadcrumbItem[]) => {
+    // Find the folder by ID (in a real app, you'd fetch from API)
+    const folderName = newBreadcrumbPath[newBreadcrumbPath.length - 1]?.name || "Pasta"
+
+    setCurrentFolderId(folderId)
+    setBreadcrumbPath(newBreadcrumbPath)
+    setCurrentFile({
+      id: folderId,
+      title: folderName,
+      type: "folder",
+      modified: "Agora",
+    })
+    setCurrentViewer("folder")
+  }
+
   // Render viewers
   if (currentViewer && currentFile) {
     switch (currentViewer) {
@@ -135,7 +158,7 @@ export default function FileManager() {
         return (
           <VideoViewer
             fileName={currentFile.title}
-            fileSize={currentFile.size}
+            fileSize={currentFile.sizeTotal}
             onClose={handleCloseViewer}
             onShare={handleShareFromViewer}
           />
@@ -144,7 +167,7 @@ export default function FileManager() {
         return (
           <PDFViewer
             fileName={currentFile.title}
-            fileSize={currentFile.size}
+            fileSize={currentFile.sizeTotal}
             onClose={handleCloseViewer}
             onShare={handleShareFromViewer}
           />
@@ -153,7 +176,7 @@ export default function FileManager() {
         return (
           <SpreadsheetViewer
             fileName={currentFile.title}
-            fileSize={currentFile.size}
+            fileSize={currentFile.sizeTotal}
             onClose={handleCloseViewer}
             onShare={handleShareFromViewer}
           />
@@ -162,10 +185,14 @@ export default function FileManager() {
         return (
           <FolderViewer
             folderName={currentFile.title}
+            folderId={currentFolderId}
+            folderSize={currentFile.sizeTotal}
+            breadcrumbPath={breadcrumbPath}
             onClose={handleCloseViewer}
             onFileClick={handleFileClick}
             onFileDelete={handleFileDelete}
             onFileShare={handleFileShare}
+            onNavigateToFolder={handleNavigateToFolder}
           />
         )
     }
