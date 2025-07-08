@@ -6,7 +6,7 @@ import { PlusIcon, UploadIcon, FolderIcon } from "../ui/Icons"
 import { Modal } from "../ui/Modal"
 import { NewCollectionForm } from "../Forms/NewCollectionForm"
 import { useState } from "react"
-import type { FileItem } from "../FileGrid/FileGrid"
+import type { FileItem } from "../FileGrid/FileCard"
 
 interface ActionBarProps {
   onCreateNew: (data: FileItem[]) => FileItem[]
@@ -42,7 +42,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({ onCreateNew, onUpload, onC
     })
     .then((res) => res.json())
     .then((json) => onCreateNew(json))
-    .catch((err) => console.log('error'))
+    .catch((err) => console.log('error', err))
 
   }
 
